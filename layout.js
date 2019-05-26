@@ -53,7 +53,7 @@ const Modes = {
             enterLayout: UltrawideLayout.enterUltrawideLayout,
             exitLayout: UltrawideLayout.exitUltrawideLayout,
             layout: UltrawideLayout.applyUltrawideLayout,
-            icon: "window-tile-vertical-symbolic",
+            icon: "window-tile-ultrawide-symbolic",
         },
     },
     byName: function(name) {

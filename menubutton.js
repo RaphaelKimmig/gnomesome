@@ -8,9 +8,10 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const Shell = imports.gi.Shell;
 const LayoutModes = Me.imports.layout.Modes;
-
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+
+
 
 var MenuButton = new Lang.Class({
     Name: 'Gnomesome.MenuButton',
@@ -29,7 +30,7 @@ var MenuButton = new Lang.Class({
         this._iconBox = new St.BoxLayout();
         this._iconIndicator = new St.Icon({
             style_class: 'system-status-icon',
-            icon_name: 'window-tile-floating-symbolic',
+            gicon: Utils.icon('window-tile-floating-symbolic'),
         });
         this._iconBox.add(this._iconIndicator);
         this.actor.add_actor(this._iconBox);
@@ -39,7 +40,7 @@ var MenuButton = new Lang.Class({
         const addLayout = (layout) => {
             const item = new PopupMenu.PopupBaseMenuItem();
             const label = new St.Label({text: layout.display});
-            const icon = new St.Icon({style_class: 'popup-menu-icon', icon_name: layout.icon})
+            const icon = new St.Icon({style_class: 'popup-menu-icon', gicon: Utils.icon(layout.icon)})
             item.actor.add(icon, {align: St.Align.START});
             item.actor.add(label);
             this.menu.addMenuItem(item);
@@ -88,7 +89,7 @@ var MenuButton = new Lang.Class({
         this.parent();
     },
     setLayout: function(layout) {
-        this._iconIndicator.icon_name = layout.icon;
+        this._iconIndicator.gicon = Utils.icon(layout.icon);
     },
     _updateIndicator: function() {
         this._currentWorkspace = Utils.DisplayWrapper.getWorkspaceManager().get_active_workspace().index();

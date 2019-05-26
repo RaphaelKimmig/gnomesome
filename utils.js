@@ -1,5 +1,6 @@
 const Meta = imports.gi.Meta;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const Gio = imports.gi.Gio;
 const logging = Me.imports.logging;
 const logger = logging.getLogger('Gnomesome.Utils');
 
@@ -61,3 +62,8 @@ var DisplayWrapper = {
       return global.display || global.screen;
     },
 };
+
+var icon = function(name) {
+    return Gio.icon_new_for_string(`${Me.path}/icons/status/${name}.svg`);
+};
+
