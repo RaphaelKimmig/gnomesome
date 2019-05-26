@@ -3,6 +3,7 @@ const GObject = imports.gi.GObject;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const SplitLayout = Me.imports.splitlayout;
+const UltrawideLayout = Me.imports.ultrawidelayout;
 const FloatLayout = Me.imports.floatlayout;
 const MaximizeLayout = Me.imports.maximizelayout;
 const Utils = Me.imports.utils;
@@ -17,6 +18,7 @@ const Modes = {
     VBOXLAYOUT: 1,
     HBOXLAYOUT: 2,
     MAXIMIZED: 3,
+    ULTRAWIDE: 4,
     properties: {
         0: {
             value: 0, name: "floating", display: _("Floating"),
@@ -45,6 +47,13 @@ const Modes = {
             exitLayout: MaximizeLayout.exitMaximizeLayout,
             layout: MaximizeLayout.updateMaximizeLayout,
             icon: "window-tile-full-symbolic",
+        },
+        4: {
+            value: 4, name: "ultrawide", display: _("Ultrawide"),
+            enterLayout: UltrawideLayout.enterUltrawideLayout,
+            exitLayout: UltrawideLayout.exitUltrawideLayout,
+            layout: UltrawideLayout.applyUltrawideLayout,
+            icon: "window-tile-vertical-symbolic",
         },
     },
     byName: function(name) {
