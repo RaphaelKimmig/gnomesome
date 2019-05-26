@@ -26,6 +26,7 @@ const Modes = {
             exitLayout: FloatLayout.exitFloatingLayout,
             layout: FloatLayout.updateFloatingLayout,
             icon: "window-tile-floating-symbolic",
+            enabled: true,
         },
         1: {
             value: 1, name: "horizontal", display: _("Horizontal"),
@@ -33,6 +34,7 @@ const Modes = {
             exitLayout: SplitLayout.exitVBoxLayout,
             layout: SplitLayout.applyVBoxLayout,
             icon: "window-tile-vertical-symbolic",
+            enabled: false,
         },
         2: {
             value: 2, name: "vertical", display: _("Vertical"),
@@ -40,6 +42,7 @@ const Modes = {
             exitLayout: SplitLayout.exitHBoxLayout,
             layout: SplitLayout.applyHBoxLayout,
             icon: "window-tile-horizontal-symbolic",
+            enabled: false,
         },
         3: {
             value: 3, name: "maximized", display: _("Maximized"),
@@ -47,6 +50,7 @@ const Modes = {
             exitLayout: MaximizeLayout.exitMaximizeLayout,
             layout: MaximizeLayout.updateMaximizeLayout,
             icon: "window-tile-full-symbolic",
+            enabled: true,
         },
         4: {
             value: 4, name: "ultrawide", display: _("Ultrawide"),
@@ -54,6 +58,7 @@ const Modes = {
             exitLayout: UltrawideLayout.exitUltrawideLayout,
             layout: UltrawideLayout.applyUltrawideLayout,
             icon: "window-tile-ultrawide-symbolic",
+            enabled: true,
         },
     },
     byName: function(name) {
@@ -168,9 +173,14 @@ var Layout = new GObject.Class({
         return NumModes;
     },
     roll_layout: function(offset) {
-        const next_layout_id = (this.mode + offset + this.num_layouts()) % this.num_layouts();
-        logger.debug("Rolling layout " + Modes.properties[next_layout_id].name);
-        this.mode = next_layout_id;
+        var layout = {enabled: false};
+        while (!layout.enabled) {
+            let next_layout_id = (this.mode + offset + this.num_layouts()) % this.num_layouts();
+            layout = Modes.properties[next_layout_id];
+            offset = Math.sign(offset) * (Math.abs(offset) + 1);
+        }
+        logger.debug("Rolling layout " + layout.name);
+        this.mode = layout.value;
     },
     addGSWindow: function(gswindow, relayout=true) {
         if (!gswindow) {return;}
