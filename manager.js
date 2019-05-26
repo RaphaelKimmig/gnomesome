@@ -120,7 +120,7 @@ var Manager = new Lang.Class({
         this.handleKey("layout-vertical",          Lang.bind(this, function() {this.current_layout().mode = Layout.Modes.VBOXLAYOUT;}));
         this.handleKey("layout-floating",          Lang.bind(this, function() {this.current_layout().mode = Layout.Modes.FLOATING;}));
         this.handleKey("layout-maximized",         Lang.bind(this, function() {this.current_layout().mode = Layout.Modes.MAXIMIZED;}));
-        this.handleKey("layout-ultrawide",         Lang.bind(this, function() {this.current_layout().mode = Layout.Modes.ULTRAWIDE;}));
+        // this.handleKey("layout-ultrawide",         Lang.bind(this, function() {this.current_layout().mode = Layout.Modes.ULTRAWIDE;}));
 
         this.handleKey("next-window",              Lang.bind(this, this.next_window));
         this.handleKey("previous-window",          Lang.bind(this, this.previous_window));
