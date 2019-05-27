@@ -17,7 +17,7 @@ function init(){
 
 function buildPrefsWidget() {
     let settings = new GnomesomeSettings.Prefs();
-    
+
     let frame = new Gtk.Box({
         orientation: Gtk.Orientation.VERTICAL,
         border_width: 10
@@ -30,7 +30,7 @@ function buildPrefsWidget() {
 
     // General
     // ===============================================================
-    
+
     (function() {
         let label = new Gtk.Label({
             label: _("<b>General:</b>"),
@@ -102,7 +102,7 @@ function buildPrefsWidget() {
 
     // Tiling
     // ===============================================================
-    
+
     (function() {
         let label = new Gtk.Label({
             label: _("<b>Tiling:</b>"),
@@ -127,13 +127,15 @@ function buildPrefsWidget() {
         var r_vertical = new Gtk.RadioButton(  { label: _("Vertical"),   group: r_floating });
         var r_horizontal = new Gtk.RadioButton({ label: _("Horizontal"), group: r_floating });
         var r_maximized = new Gtk.RadioButton({ label: _("Maximized"), group: r_floating });
+        var r_ultrawide = new Gtk.RadioButton({ label: _("Ultrawide"), group: r_floating });
 
         var layout_radios =
         {
             'floating': r_floating,
             'horizontal': r_horizontal,
             'vertical': r_vertical,
-            'maximized': r_maximized
+            'maximized': r_maximized,
+            'ultrawide': r_ultrawide
         };
 
         var pref = settings.DEFAULT_LAYOUT;
@@ -154,6 +156,7 @@ function buildPrefsWidget() {
         init_radio('vertical');
         init_radio('horizontal');
         init_radio('maximized');
+        init_radio('ultrawide');
 
         hbox.add(label);
         hbox.add(radio_box);
@@ -205,7 +208,7 @@ function buildPrefsWidget() {
 
     // Keybindings
     // ===============================================================
-    
+
     (function() {
         let label = new Gtk.Label({
             label: _("<b>Advanced settings:</b>"),

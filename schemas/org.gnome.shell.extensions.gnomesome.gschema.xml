@@ -17,6 +17,7 @@
                 <choice value="horizontal"/>
                 <choice value="vertical"/>
                 <choice value="maximized"/>
+                <choice value="ultrawide"/>
             </choices>
             <default>"floating"</default>
         </key>
