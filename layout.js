@@ -142,9 +142,7 @@ var Layout = new GObject.Class({
         this.removeGSWindow(gswindow, false);
         // add window at front
         this.gswindows.unshift(gswindow);
-        // set n_master to 1 and force relayout if there is no change
-        if (this.n_master != 1) {this.n_master = 1;}
-        else {this.relayout();}
+        this.relayout();
     },
 
     layout_name: function() {
