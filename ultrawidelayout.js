@@ -56,7 +56,7 @@ function apply(gswindows, split_pos, n_master) {
         var gsmasters = gswindows_to_layout.slice(0, n_master);
 
         // place up to n_master windows to the right
-        let n_right = Math.min(n_master, gswindows_to_layout.length - n_master);
+        let n_right = Math.min(n_master, Math.floor((gswindows_to_layout.length - n_master)/2));
 
         // and the rest on the left
         let n_left = gswindows_to_layout.length - n_master - n_right;
