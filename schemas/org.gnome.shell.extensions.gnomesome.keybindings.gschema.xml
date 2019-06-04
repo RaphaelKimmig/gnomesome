@@ -21,6 +21,11 @@
             <summary>Switch to vertical layout</summary>
             <description>Change the layout of the current monitor and workspace to vertical.</description>
         </key>
+        <key type="as" name="layout-ultrawide">
+            <default>["&lt;Mod4&gt;&lt;Ctrl&gt;w"]</default>
+            <summary>Switch to ultrawide layout</summary>
+            <description>Change the layout of the current monitor and workspace to ultrawide.</description>
+        </key>
         <key type="as" name="layout-floating">
             <default>["&lt;Mod4&gt;&lt;Ctrl&gt;f"]</default>
             <summary>Switch to floating layout</summary>
@@ -222,4 +227,4 @@
             <description>Launches a gnome terminal.</description>
         </key>
     </schema>
-</schemalist>      
+</schemalist>
