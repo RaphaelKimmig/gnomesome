@@ -415,7 +415,7 @@ var Manager = new Lang.Class({
 
         let index = gslayout.indexOfWindow(cw);
         if (index < 0) {
-            logger.warn.log("Warning: current window is not in layout!");
+            logger.warn("Warning: current window is not in layout!");
             index = 0;
         } else {
             index += offset;
@@ -428,7 +428,7 @@ var Manager = new Lang.Class({
                 newGSWindow.activate();
                 break;
             }
-            index += 1;
+            index += offset;
         }
 
     },
