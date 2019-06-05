@@ -93,6 +93,7 @@ var Layout = new GObject.Class({
         this._mode = Modes.FLOATING;
         this._split_pos = 0.5;
         this._n_master = 1;
+        this._persisted_window_ids = [];
 
         // this.connect('notify::mode', Lang.bind(this, function () {this.relayout();}));  // handled in layout_changed(from, to)
         this.connect('notify::split-pos', Lang.bind(this, function () {this.relayout();}));

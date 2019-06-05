@@ -38,13 +38,23 @@ var Manager = new Lang.Class({
         this.prefs = GnomesomeSettings.prefs;
         this._bound_keybindings = {};
 
+        let lastState = this.prefs.LAST_STATE.get();
+        // we only want to restore the last state once to survive enable/disable cycles
+        this.prefs.LAST_STATE.set([]);
+
+        logger.debug("got last state", lastState);
+
         this.initIcons();
 
         this.initKeyBindings();
 
         logger.info("Number of workspaces is " + workspace_manager.get_n_workspaces());
-        for (var id = 0; id < workspace_manager.get_n_workspaces(); ++id) {
-            this.prepare_workspace(id);
+
+        let n_workspaces = workspace_manager.get_n_workspaces();
+        for (var id = 0; id < n_workspaces; ++id) {
+            let layout = lastState.length > id ? lastState[id] : undefined;
+            logger.debug("got persisted layout info", layout);
+            this.prepare_workspace(id, layout);
         }
 
         Utils.connect_and_track(this, workspace_manager, 'workspace-added',
@@ -108,6 +118,26 @@ var Manager = new Lang.Class({
         this.releaseKeyBindings();
         if (this.menuButton) { this.menuButton.destroy(); }
         Utils.disconnect_tracked_signals(this);
+
+        let persistedLayouts = [];
+        for (let layouts_for_monitors of this.layouts) {
+            let persistedMonitorLayouts = [];
+            for (let layout of layouts_for_monitors) {
+                let persistedLayout = {
+                    mode: layout._mode,
+                    split_pos: layout._split_pos,
+                    n_master: layout._n_master,
+                    window_ids: []
+                };
+                for (let win of layout.gswindows) {
+                    persistedLayout.window_ids.push(win.window.get_id())
+                }
+                persistedMonitorLayouts.push(persistedLayout);
+            }
+            persistedLayouts.push(persistedMonitorLayouts);
+        }
+        this.prefs.LAST_STATE.set(persistedLayouts);
+
         while (this.layouts.length > 0) {
             this.remove_workspace(0);
         }
@@ -285,13 +315,24 @@ var Manager = new Lang.Class({
             next_workspace.activate(global.get_current_time());
         }
     },
-    prepare_workspace: function (index) {
+    prepare_workspace: function (index, persisted) {
         logger.debug("Preparing workspace with index " + index)
+
         const workspace = Utils.DisplayWrapper.getWorkspaceManager().get_workspace_by_index(index);
         const layouts_for_monitors = [];
-        for (let id = 0; id < Utils.DisplayWrapper.getScreen().get_n_monitors(); ++id) {
+        let n_monitors = Utils.DisplayWrapper.getScreen().get_n_monitors();
+        for (let id = 0; id < n_monitors; ++id) {
             logger.debug("Preparing monitor with index " + id + " for workspace with index " + index);
             let l = new Layout.Layout(this.prefs);
+
+            if(persisted !== undefined && persisted[id] !== null) {
+                let p = persisted[id];
+                l._mode = p.mode;
+                l._split_pos = p.split_pos;
+                l._n_master = p.n_master;
+                l._persisted_window_ids = p.window_ids;
+            }
+
             l.connect("notify::mode", Lang.bind(this, function(l) {
                 if (this.menuButton) { this.menuButton.setLayout(l.properties()); }
                 const cw = this.current_window();
@@ -301,10 +342,30 @@ var Manager = new Lang.Class({
         }
         this.layouts.splice(index, 0, layouts_for_monitors);
 
-        // add all existing windows
+        // sort existing windows by monitor according to persited window ids appending all unknown
+        // windows at the end
         const windows = workspace.list_windows();
-        for (let id = 0; id < windows.length; ++id) {
-            this.window_added(workspace, windows[id]);
+
+        let windows_by_ids = {};
+
+        for (let win of windows) {
+            windows_by_ids[win.get_id()] = win;
+        }
+
+        // add persisted windows first
+        for (let layout of layouts_for_monitors) {
+            for(let window_id of layout._persisted_window_ids) {
+                let win = windows_by_ids[window_id];
+                if (win) {
+                    this.window_added(workspace, win, layout);
+                }
+                delete windows_by_ids[window_id];
+            }
+        }
+        // add the remaining windows wherever
+        for(let window_id in windows_by_ids) {
+            this.window_added(workspace, windows_by_ids[window_id]);
+
         }
 
         Utils.connect_and_track(this, workspace, "window-added", Lang.bind(this, this.window_added));
@@ -321,18 +382,22 @@ var Manager = new Lang.Class({
     update_workspaces: function () {
 
     },
-    window_added: function(workspace, window) {
-        logger.debug("Window added " + workspace.index() + " " + window.get_monitor());
-        var gslayout = this.layouts[workspace.index()][window.get_monitor()];
-        var gswindow = window.gswindow;
-        if (window.gswindow) {
-            gslayout.addGSWindow(window.gswindow);
-            logger.debug("Window already registered as gswindow");
-        } else {
-            gswindow = new GSWindow.GSWindow(window, gslayout);
-            window.gswindow = gswindow;
-            gslayout.addGSWindow(gswindow);
+    window_added: function(workspace, window, gslayout) {
+        if(gslayout === undefined) {
+            gslayout = this.layouts[workspace.index()][window.get_monitor()];
         }
+
+        logger.debug("Window added " + workspace.index() + " " + gslayout);
+
+        if (!window.gswindow) {
+            window.gswindow = new GSWindow.GSWindow(window, gslayout);
+        } else {
+            logger.debug("Window already registered as gswindow");
+        }
+
+        let gswindow = window.gswindow;
+        gslayout.addGSWindow(gswindow);
+
         // attempt to relayout, but we need to wait until the window is ready
         logger.debug("Waiting until window is ready");
         var attempt = function(remainingAttempts) {

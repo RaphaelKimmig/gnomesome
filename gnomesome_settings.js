@@ -73,7 +73,9 @@ function settingsLoader(path) {
         get_int: function() { return settings.get_int(this.key); },
         set_int: function(v) { settings.set_int(this.key, v); },
         get_string: function() { return settings.get_string(this.key); },
-        set_string: function(v) { settings.set_string(this.key, v); }
+        set_string: function(v) { settings.set_string(this.key, v); },
+        get_json: function() { return JSON.parse(settings.get_string(this.key)); },
+        set_json: function(v) { settings.set_string(this.key, JSON.stringify(v)); }
     }
 }
 
@@ -117,6 +119,12 @@ function Prefs() {
         gsettings: settings,
         get: l.get_boolean,
         set: l.set_boolean,
+    };
+    this.LAST_STATE = {
+        key: 'last-state',
+        gsettings: settings,
+        get: l.get_json,
+        set: l.set_json,
     };
 };
 

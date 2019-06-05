@@ -34,5 +34,8 @@
             <summary>Whether or not the pointer follows the focused window (centers)</summary>
             <description></description>
         </key>
+        <key type="s" name="last-state">
+            <default>"[]"</default>
+        </key>
     </schema>
 </schemalist>
